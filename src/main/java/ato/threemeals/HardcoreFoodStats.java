@@ -1,7 +1,10 @@
 package ato.threemeals;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.FoodStats;
+
+import java.lang.reflect.Field;
 
 public class HardcoreFoodStats extends FoodStats {
     /**
@@ -12,11 +15,67 @@ public class HardcoreFoodStats extends FoodStats {
      * 時間経過で腹が減るスピード
      */
     public static final float HARAHERING_SPEED = 1;
+    /**
+     * 肥満度
+     * 多いほど、死ににくく燃費が悪くなる
+     * [0, 100]: 健康
+     * (100, 200]: ぽっちゃり, 燃費が悪い
+     * (200, 400]: 肥満, 常時走れない
+     * (400, ): 超肥満, 常時ジャンプできない
+     */
+    protected float fatness = 0;
+    /**
+     * 飢餓度 (%)
+     * 多いほど、脂肪がつきやすくなる
+     */
+    protected float starveness = 100;
+
+    @Override
+    public void addStats(int foodLevel, float foodSaturationModifier) {
+        // 食事による肥満度の増加
+        fatness += foodLevel * (starveness / 100) / 10;                         // 栄養の約 10% は常に脂肪生成に回される
+        fatness += Math.max(0, getFoodLevel() + foodLevel - 20) * (starveness / 100);   // 満腹度の超過分が脂肪になる
+        fatness += Math.max(0, getSaturationLevel() + foodLevel * foodSaturationModifier * 2
+                - Math.min(getFoodLevel() + foodLevel, 20)) * (starveness / 100);       // 隠し満腹度の超過分が脂肪になる
+
+        super.addStats(foodLevel, foodSaturationModifier);
+    }
 
     @Override
     public void onUpdate(EntityPlayer entityPlayer) {
+        {
+            try {
+                Field f = FoodStats.class.getDeclaredFields()[2];
+                f.setAccessible(true);
+                System.out.println("exhaustion: " + f.getFloat(this)
+                        + ", fatness: " + fatness
+                        + ", starveness: " + starveness);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         super.onUpdate(entityPlayer);
         harahering();
+        // 飢餓度の時間経過による減少
+        starveness *= 0.99999;  // 半減期が約 1 時間 (= 3 日)
+    }
+
+    @Override
+    public void readNBT(NBTTagCompound nbttc) {
+        if (nbttc.hasKey("fatness")) {
+            fatness = nbttc.getFloat("fatness");
+        }
+        if (nbttc.hasKey("starveness")) {
+            starveness = nbttc.getFloat("starveness");
+        }
+        super.readNBT(nbttc);
+    }
+
+    @Override
+    public void writeNBT(NBTTagCompound nbttc) {
+        nbttc.setFloat("fatness", fatness);
+        nbttc.setFloat("starveness", starveness);
+        super.writeNBT(nbttc);
     }
 
     /**
@@ -24,17 +83,27 @@ public class HardcoreFoodStats extends FoodStats {
      * 何もしなくても時間経過で腹が減る
      */
     private void harahering() {
-        float exhaustion = HARAHERING_SPEED / FOODEXHAUSTION_SPEED / 10000;
-        if (getFoodLevel() < 5 ) {
-            exhaustion /= Math.pow(5 - getFoodLevel(), 2);
+        float haraheri = HARAHERING_SPEED / 1000;
+        if (getFoodLevel() < 5) {
+            // 脂肪による飢餓の回避
+            double hungry = Math.min((5 - getFoodLevel()) * 0.25, 1);
+            fatness = (float) Math.max(0, fatness - haraheri * hungry);
+            if (fatness > 0) haraheri *= 1 - hungry;
+            starveness = (float) Math.min(starveness + Math.pow(hungry, 2) / 1000, 100);
         }
-        addExhaustion(exhaustion);
+        addExhaustion(haraheri);
     }
 
     @Override
-    public void addExhaustion(float par1) {
+    public void addExhaustion(float exhaustion) {
+        // 運動による脂肪の燃焼
+        fatness = (float) Math.max(0, fatness - Math.pow(exhaustion, 2) / 10);
         // ハードコア腹減りモード
         // FOODEXHAUSTION_SPEED 倍の速度で腹が減る
-        super.addExhaustion(par1 * FOODEXHAUSTION_SPEED);
+        exhaustion *= FOODEXHAUSTION_SPEED;
+        // 肥満度による腹減り速度増加
+        exhaustion *= Math.max(fatness / 100, 1);
+
+        super.addExhaustion(exhaustion);
     }
 }
