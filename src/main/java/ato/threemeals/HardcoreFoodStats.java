@@ -20,7 +20,7 @@ public class HardcoreFoodStats extends FoodStats {
      * 多いほど、死ににくく燃費が悪くなる
      * [0, 100]: 健康
      * (100, 200]: ぽっちゃり, 燃費が悪い
-     * (200, 400]: 肥満, 常時走れない
+     * (200, 400]: 肥満, 移動速度低下
      * (400, ): 超肥満, 常時ジャンプできない
      */
     protected float fatness = 0;
@@ -43,17 +43,6 @@ public class HardcoreFoodStats extends FoodStats {
 
     @Override
     public void onUpdate(EntityPlayer entityPlayer) {
-        {
-            try {
-                Field f = FoodStats.class.getDeclaredFields()[2];
-                f.setAccessible(true);
-                System.out.println("exhaustion: " + f.getFloat(this)
-                        + ", fatness: " + fatness
-                        + ", starveness: " + starveness);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
         super.onUpdate(entityPlayer);
         harahering();
         // 飢餓度の時間経過による減少
@@ -105,5 +94,13 @@ public class HardcoreFoodStats extends FoodStats {
         exhaustion *= Math.max(fatness / 100, 1);
 
         super.addExhaustion(exhaustion);
+    }
+
+    public float getStarveness() {
+        return starveness;
+    }
+
+    public float getFatness() {
+        return fatness;
     }
 }

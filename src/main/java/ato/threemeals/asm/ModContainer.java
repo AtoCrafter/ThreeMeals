@@ -10,7 +10,7 @@ public class ModContainer extends DummyModContainer {
         super(new ModMetadata());
 
         ModMetadata meta = getMetadata();
-        meta.modId = "ThreeMeals";
+        meta.modId = "ThreeMealsCore";
         meta.name = "一日三食 MOD";
         meta.version = "{version}";
     }
