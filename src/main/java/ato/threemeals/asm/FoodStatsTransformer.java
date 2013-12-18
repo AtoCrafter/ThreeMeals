@@ -42,7 +42,7 @@ public class FoodStatsTransformer implements IClassTransformer {
             }
         }
 
-        ClassWriter cwriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter cwriter = new EntityPlayerClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         cnode.accept(cwriter);
         return cwriter.toByteArray();
     }
