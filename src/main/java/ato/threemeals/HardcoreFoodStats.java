@@ -100,7 +100,7 @@ public class HardcoreFoodStats extends FoodStats {
     @Override
     public void addExhaustion(float exhaustion) {
         // 運動による脂肪の燃焼
-        fatness = (float) Math.max(0, fatness - Math.pow(exhaustion, 2) / 10);
+        fatness = (float) Math.max(0, fatness - Math.pow(exhaustion, 2) * 2);
         // ハードコア腹減りモード
         // FOODEXHAUSTION_SPEED 倍の速度で腹が減る
         exhaustion *= FOODEXHAUSTION_SPEED;
