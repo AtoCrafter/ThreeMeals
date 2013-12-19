@@ -3,11 +3,16 @@ package ato.threemeals;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = "ato.threemeals")
 public class ThreeMeals {
+    private int blockBathroomScaleId;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         loadConfig(event);
@@ -16,6 +21,12 @@ public class ThreeMeals {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+
+        String unlocalizedName = "bathroomscale";
+        Block bathroomScale = new BlockBathroomScale(blockBathroomScaleId)
+                .setUnlocalizedName(unlocalizedName)
+                .setCreativeTab(CreativeTabs.tabRedstone);
+        GameRegistry.registerBlock(bathroomScale, unlocalizedName);
     }
 
     /**
@@ -28,6 +39,8 @@ public class ThreeMeals {
         HardcoreFoodStats.FOODEXHAUSTION_SPEED = config.get(config.CATEGORY_GENERAL, "FoodExhaustionSpeed", 3).getInt(3);
         HardcoreFoodStats.HARAHERING_SPEED = config.get(config.CATEGORY_GENERAL, "HaraheringSpeed", 1).getInt(1);
         HardcoreFoodStats.ALWAYS_HARDMODE = config.get(config.CATEGORY_GENERAL, "AlwaysHardmode", true).getBoolean(true);
+
+        blockBathroomScaleId = config.getBlock("BathroomScale", 3639).getInt(3639);
 
         config.save();
     }
