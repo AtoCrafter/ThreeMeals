@@ -6,6 +6,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -27,6 +29,10 @@ public class ThreeMeals {
                 .setUnlocalizedName(unlocalizedName)
                 .setCreativeTab(CreativeTabs.tabRedstone);
         GameRegistry.registerBlock(bathroomScale, unlocalizedName);
+        GameRegistry.addRecipe(new ItemStack(bathroomScale), new Object[]{
+                "EE",
+                'E', Item.emerald
+        });
     }
 
     /**
