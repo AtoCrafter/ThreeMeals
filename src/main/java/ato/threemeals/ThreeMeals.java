@@ -27,6 +27,7 @@ public class ThreeMeals {
 
         HardcoreFoodStats.FOODEXHAUSTION_SPEED = config.get(config.CATEGORY_GENERAL, "FoodExhaustionSpeed", 3).getInt(3);
         HardcoreFoodStats.HARAHERING_SPEED = config.get(config.CATEGORY_GENERAL, "HaraheringSpeed", 1).getInt(1);
+        HardcoreFoodStats.ALWAYS_HARDMODE = config.get(config.CATEGORY_GENERAL, "AlwaysHardmode", true).getBoolean(true);
 
         config.save();
     }

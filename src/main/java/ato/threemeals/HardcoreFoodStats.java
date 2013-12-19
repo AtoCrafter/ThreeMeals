@@ -3,8 +3,7 @@ package ato.threemeals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.FoodStats;
-
-import java.lang.reflect.Field;
+import net.minecraft.world.World;
 
 public class HardcoreFoodStats extends FoodStats {
     /**
@@ -17,6 +16,11 @@ public class HardcoreFoodStats extends FoodStats {
      * Config から変更可能
      */
     public static float HARAHERING_SPEED;
+    /**
+     * 常に難易度がハードモードで空腹度管理にするか
+     * Config から変更可能
+     */
+    public static boolean ALWAYS_HARDMODE;
     /**
      * 肥満度
      * 多いほど、死ににくく燃費が悪くなる
@@ -45,7 +49,15 @@ public class HardcoreFoodStats extends FoodStats {
 
     @Override
     public void onUpdate(EntityPlayer entityPlayer) {
-        super.onUpdate(entityPlayer);
+        if (ALWAYS_HARDMODE) {
+            World world = entityPlayer.worldObj;
+            int difficultyBackup = world.difficultySetting;
+            world.difficultySetting = 3;
+            super.onUpdate(entityPlayer);
+            world.difficultySetting = difficultyBackup;
+        } else {
+            super.onUpdate(entityPlayer);
+        }
         harahering();
         // 飢餓度の時間経過による減少
         starveness *= 0.99999;  // 半減期が約 1 時間 (= 3 日)
