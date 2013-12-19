@@ -1,0 +1,11 @@
+[
+{
+  "modid": "ato.threemeals",
+  "name": "一日三食！ 腹減り MOD",
+  "description": "毎日ちゃんとご飯を食べていないと飢えてしまう MOD です。脂肪と飢餓の概念を追加します。",
+  "url": "http://atocrafter.github.io/ThreeMeals/",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authors": ["Ato"]
+}
+]
