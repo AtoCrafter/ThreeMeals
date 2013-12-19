@@ -9,12 +9,14 @@ import java.lang.reflect.Field;
 public class HardcoreFoodStats extends FoodStats {
     /**
      * 腹が減るスピード、バニラからの倍率
+     * Config から変更可能
      */
-    public static final float FOODEXHAUSTION_SPEED = 3;
+    public static float FOODEXHAUSTION_SPEED;
     /**
      * 時間経過で腹が減るスピード
+     * Config から変更可能
      */
-    public static final float HARAHERING_SPEED = 1;
+    public static float HARAHERING_SPEED;
     /**
      * 肥満度
      * 多いほど、死ににくく燃費が悪くなる
